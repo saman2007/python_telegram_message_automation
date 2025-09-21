@@ -5,9 +5,7 @@ import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
 import os
-
-STORED_TG_USERS = "data/data.json"
-STORED_SESSIONS_FOLDER = "sessions"
+from modules.static.constants import STORED_TG_USERS, STORED_SESSIONS_FOLDER
 
 
 def add_tg_user_action() -> types.Response:

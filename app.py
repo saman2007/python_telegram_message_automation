@@ -2,6 +2,7 @@ from InquirerPy import inquirer
 import modules.menuActions.menuActions as actions
 import modules.types.types as types
 from InquirerPy.utils import color_print
+from modules.helpers.helpers import create_not_existed_data
 
 NOT_IMPLEMENTED_OPTION_ERROR: types.Response = {
     "error": {"message": "Option is not implemented yet, coming soon!", "code": 503},
@@ -10,6 +11,8 @@ NOT_IMPLEMENTED_OPTION_ERROR: types.Response = {
 
 
 def main():
+    create_not_existed_data()
+
     options = {
         "Add a Telegram User": actions.add_tg_user_action,
         "Show Telegram Users": actions.show_tg_users_action,

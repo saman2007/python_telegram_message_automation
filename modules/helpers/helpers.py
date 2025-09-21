@@ -1,6 +1,6 @@
 from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
-import modules.types.types as types
+from modules.static.constants import STORED_TG_USERS
 
 
 async def get_tg_user_info(
@@ -26,3 +26,11 @@ async def get_tg_user_info(
     )
 
     return await tg_client.get_me()
+
+
+def create_not_existed_data():
+    try:
+        with open(STORED_TG_USERS, "x") as f:
+            f.write("{}")
+    except Exception as e:
+        pass
