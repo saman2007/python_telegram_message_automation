@@ -4,8 +4,10 @@ import json
 import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
+import os
 
 STORED_TG_USERS = "data/data.json"
+STORED_SESSIONS_FOLDER = "sessions"
 
 
 def add_tg_user_action() -> types.Response:
@@ -74,3 +76,28 @@ def show_tg_users_action() -> types.Response:
             return {"error": None, "isSuccess": True}
     except Exception as e:
         return {"error": {"message": str(e), "code": 500}, "isSuccess": False}
+
+
+def delete_tg_user_action() -> types.Response:
+    try:
+        with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
+            accounts = json.loads(f.read())
+
+        selected_username = inquirer.select(
+            message="Select an action:",
+            choices=accounts.keys(),
+        ).execute()
+
+        account_api_id = accounts[selected_username]["api_id"]
+
+        del accounts[selected_username]
+
+        with open(STORED_TG_USERS, "w") as f:
+            f.write(json.dumps(accounts))
+            f.truncate()
+
+        os.remove(STORED_SESSIONS_FOLDER + f"/{account_api_id}.session")
+
+        return {"error": None, "isSuccess": True}
+    except Exception as e:
+        return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
