@@ -3,13 +3,19 @@ import modules.menuActions.menuActions as actions
 import modules.types.types as types
 from InquirerPy.utils import color_print
 
+NOT_IMPLEMENTED_OPTION_ERROR: types.Response = {
+    "error": {"message": "Option is not implemented yet, coming soon!", "code": 503},
+    "isSuccess": False,
+}
+
 
 def main():
     options = {
         "Add a Telegram User": actions.add_tg_user_action,
-        "Delete a Telegram User": lambda: None,
-        "Add Spam Messages": lambda: None,
-        "Start Spamming": lambda: None,
+        "Show Telegram Users": actions.show_tg_users_action,
+        "Delete a Telegram User": lambda: NOT_IMPLEMENTED_OPTION_ERROR,
+        "Add Spam Messages": lambda: NOT_IMPLEMENTED_OPTION_ERROR,
+        "Start Spamming": lambda: NOT_IMPLEMENTED_OPTION_ERROR,
         "Exit": lambda: None,
     }
 

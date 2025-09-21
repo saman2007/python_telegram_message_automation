@@ -3,6 +3,9 @@ import modules.helpers.helpers as helpers
 import json
 import asyncio
 import modules.types.types as types
+from InquirerPy.utils import color_print
+
+STORED_TG_USERS = "data/data.json"
 
 
 def add_tg_user_action() -> types.Response:
@@ -15,10 +18,10 @@ def add_tg_user_action() -> types.Response:
         if not user_info:
             raise Exception("No info found.")
 
-        with open("data/data.json", "r+", encoding="utf-8") as f:
+        with open(STORED_TG_USERS, "r+", encoding="utf-8") as f:
             accounts = json.loads(f.read())
 
-            if(f"@{user_info.username}" in accounts):
+            if f"@{user_info.username}" in accounts:
                 raise Exception("This account already exists.")
 
             accounts[f"@{user_info.username}"] = {
@@ -45,3 +48,29 @@ def add_tg_user_action() -> types.Response:
 
     except Exception as e:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+
+def show_tg_users_action() -> types.Response:
+    try:
+        with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
+            accounts = json.loads(f.read())
+
+            if len(accounts.keys()) > 0:
+                color_print(formatted_text=[("purple", f"___________")])
+
+            for username in accounts:
+                color_print(
+                    formatted_text=[
+                        ("white", "api id: "),
+                        ("orange", f"{username}\n"),
+                        ("white", "api id: "),
+                        ("orange", f"{accounts[username]["api_id"]}\n"),
+                        ("white", "api api_hash: "),
+                        ("orange", f"{accounts[username]["api_hash"]}\n"),
+                        ("purple", f"___________"),
+                    ]
+                )
+
+            return {"error": None, "isSuccess": True}
+    except Exception as e:
+        return {"error": {"message": str(e), "code": 500}, "isSuccess": False}
