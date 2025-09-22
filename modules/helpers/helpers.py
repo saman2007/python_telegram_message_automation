@@ -1,27 +1,26 @@
 from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
 from modules.static.constants import STORED_TG_USERS
+import json
+import re
 
 
 async def get_tg_user_info(
-    api_id: int, api_hash: str
+    api_id: int, api_hash: str, phone_number: str
 ) -> telethonTypes.User | telethonTypes.InputPeerUser:
-    async def get_phone():
-        return await inquirer.text("Enter your phone number: ").execute_async()
-
     async def code_callback():
         return await inquirer.text(
             "Enter the code that is sent to your telegram PV: "
         ).execute_async()
 
     tg_client = TelegramClient(
-        f"sessions/{api_id}.session",
+        f"sessions/{phone_number[1:]}.session",
         api_id,
         api_hash,
     )
 
     await tg_client.start(
-        phone=get_phone,
+        phone=phone_number,
         code_callback=code_callback,
     )
 
@@ -34,3 +33,18 @@ def create_not_existed_data():
             f.write("{}")
     except Exception as e:
         pass
+
+
+def is_user_exist(phone_number: str) -> bool:
+    with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
+        accounts = json.loads(f.read())
+
+        for account in accounts:
+            if phone_number == accounts[account]["phone_number"]:
+                return True
+
+        return False
+
+
+def looks_international(phone_number: str) -> bool:
+    return bool(re.fullmatch(r"\+\d{6,15}", phone_number.strip()))

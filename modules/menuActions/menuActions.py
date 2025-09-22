@@ -11,9 +11,22 @@ from modules.static.constants import STORED_TG_USERS, STORED_SESSIONS_FOLDER
 def add_tg_user_action() -> types.Response:
     api_id = inquirer.text("Enter your api id: ").execute()
     api_hash = inquirer.text("Enter your api hash: ").execute()
+    phone_number = inquirer.text(
+        "Enter your phone number(with international form): "
+    ).execute()
 
     try:
-        user_info = asyncio.run(helpers.get_tg_user_info(int(api_id), api_hash))
+        if not helpers.looks_international(phone_number):
+            raise Exception(
+                "Enter your phone number in international format like this:\n+989171111111"
+            )
+
+        if helpers.is_user_exist(phone_number):
+            raise Exception("This account already exists.")
+
+        user_info = asyncio.run(
+            helpers.get_tg_user_info(int(api_id), api_hash, phone_number)
+        )
 
         if not user_info:
             raise Exception("No info found.")
@@ -27,6 +40,7 @@ def add_tg_user_action() -> types.Response:
             accounts[f"@{user_info.username}"] = {
                 "api_id": int(api_id),
                 "api_hash": api_hash,
+                "phone_number": phone_number,
             }
 
             proceed = inquirer.confirm(
@@ -61,12 +75,14 @@ def show_tg_users_action() -> types.Response:
             for username in accounts:
                 color_print(
                     formatted_text=[
-                        ("white", "api id: "),
+                        ("white", "Username: "),
                         ("orange", f"{username}\n"),
-                        ("white", "api id: "),
+                        ("white", "API ID: "),
                         ("orange", f"{accounts[username]["api_id"]}\n"),
-                        ("white", "api api_hash: "),
+                        ("white", "API Hash: "),
                         ("orange", f"{accounts[username]["api_hash"]}\n"),
+                        ("white", "Phone Number: "),
+                        ("orange", f"{accounts[username]["phone_number"]}\n"),
                         ("purple", f"___________"),
                     ]
                 )
