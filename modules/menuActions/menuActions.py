@@ -4,7 +4,6 @@ import json
 import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
-import os
 from modules.static.constants import STORED_TG_USERS, STORED_SESSIONS_FOLDER
 
 
@@ -98,19 +97,28 @@ def delete_tg_user_action() -> types.Response:
             accounts = json.loads(f.read())
 
         selected_username = inquirer.select(
-            message="Select an action:",
+            message="Select the user that you want to delete:",
             choices=accounts.keys(),
         ).execute()
 
-        account_api_id = accounts[selected_username]["api_id"]
+        account = accounts[selected_username]
+
+        is_logged_out = asyncio.run(
+            helpers.log_out_user(
+                account["api_id"], account["api_hash"], account["phone_number"]
+            )
+        )
+
+        if not is_logged_out:
+            raise Exception(
+                "Couldn't log out from your account. Please check your internet or try again later."
+            )
 
         del accounts[selected_username]
 
         with open(STORED_TG_USERS, "w") as f:
             f.write(json.dumps(accounts))
             f.truncate()
-
-        os.remove(STORED_SESSIONS_FOLDER + f"/{account_api_id}.session")
 
         return {"error": None, "isSuccess": True}
     except Exception as e:

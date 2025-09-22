@@ -5,6 +5,10 @@ import json
 import re
 
 
+def get_session_path(phone_number: str) -> str:
+    return f"sessions/{phone_number[1:]}.session"
+
+
 async def get_tg_user_info(
     api_id: int, api_hash: str, phone_number: str
 ) -> telethonTypes.User | telethonTypes.InputPeerUser:
@@ -14,7 +18,7 @@ async def get_tg_user_info(
         ).execute_async()
 
     tg_client = TelegramClient(
-        f"sessions/{phone_number[1:]}.session",
+        get_session_path(phone_number),
         api_id,
         api_hash,
     )
@@ -48,3 +52,11 @@ def is_user_exist(phone_number: str) -> bool:
 
 def looks_international(phone_number: str) -> bool:
     return bool(re.fullmatch(r"\+\d{6,15}", phone_number.strip()))
+
+
+async def log_out_user(api_id: int, api_hash: str, phone_number: str) -> bool:
+    tg_client = TelegramClient(get_session_path(phone_number), api_id, api_hash)
+
+    await tg_client.connect()
+
+    return await tg_client.log_out()
