@@ -3,6 +3,10 @@ from InquirerPy import inquirer
 from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
 import json
 import re
+import typing
+import modules.types.types as types
+import asyncio
+from random import choice
 
 
 def get_session_path(phone_number: str) -> str:
@@ -66,3 +70,27 @@ async def log_out_user(api_id: int, api_hash: str, phone_number: str) -> bool:
     await tg_client.connect()
 
     return await tg_client.log_out()
+
+
+async def send_message_to(
+    accounts: typing.List[types.Account],
+    messages: typing.List[str],
+    messages_number: int,
+    username: str,
+) -> None:
+    queue = []
+    for account in accounts:
+
+        tg_client = TelegramClient(
+            get_session_path(account["phone_number"]),
+            account["api_id"],
+            account["api_hash"],
+        )
+
+        await tg_client.connect()
+
+        for _ in range(0, messages_number):
+            random_msg = choice(messages)
+            queue.append(tg_client.send_message(username, random_msg))
+
+    await asyncio.gather(*queue)

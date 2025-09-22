@@ -5,6 +5,7 @@ import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
 from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
+import typing
 
 
 def add_tg_user_action() -> types.Response:
@@ -31,7 +32,7 @@ def add_tg_user_action() -> types.Response:
             raise Exception("No info found.")
 
         with open(STORED_TG_USERS, "r+", encoding="utf-8") as f:
-            accounts = json.loads(f.read())
+            accounts: typing.Dict[str, types.Account] = json.loads(f.read())
 
             if f"@{user_info.username}" in accounts:
                 raise Exception("This account already exists.")
@@ -66,7 +67,7 @@ def add_tg_user_action() -> types.Response:
 def show_tg_users_action() -> types.Response:
     try:
         with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
-            accounts = json.loads(f.read())
+            accounts: typing.Dict[str, types.Account] = json.loads(f.read())
 
             if len(accounts.keys()) > 0:
                 color_print(formatted_text=[("purple", f"___________")])
@@ -94,7 +95,7 @@ def show_tg_users_action() -> types.Response:
 def delete_tg_user_action() -> types.Response:
     try:
         with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
-            accounts = json.loads(f.read())
+            accounts: typing.Dict[str, types.Account] = json.loads(f.read())
 
         selected_username = inquirer.select(
             message="Select the user that you want to delete:",
@@ -158,5 +159,69 @@ def show_spam_messages_action() -> types.Response:
                 )
 
             return {"error": None, "isSuccess": True}
+    except Exception as e:
+        return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+
+def start_spamming_action() -> types.Response:
+    try:
+        with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
+            accounts: typing.Dict[str, types.Account] = json.loads(f.read())
+
+        if len(accounts.keys()) == 0:
+            raise Exception(
+                "You must add least add one account to the list of accounts which is possible by selecting 'Add a Telegram User' option."
+            )
+
+        selected_accounts = inquirer.checkbox(
+            "Select the accounts that you want to spam with:",
+            accounts.keys(),
+            validate=lambda result: len(result) >= 1,
+            invalid_message="Must be at least 1 selection",
+            instruction="(Select at least 1 and select by pressing on 'Space')",
+        ).execute()
+
+        with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
+            spam_messages = json.loads(f.read())
+
+        if len(spam_messages) == 0:
+            raise Exception(
+                "You must add least add one spam message to the list of spam messages which is possible by selecting 'Add a Spam Message' option."
+            )
+
+        selected_spam_messages: typing.List[str] = inquirer.checkbox(
+            "Select the accounts that you want to spam with:",
+            spam_messages,
+            validate=lambda result: len(result) >= 1,
+            invalid_message="Must be at least 1 selection",
+            instruction="(Select at least 1 and select by pressing on 'Space')",
+        ).execute()
+
+        spam_to_username: str = (
+            "@" + inquirer.text("Enter the username that you want to spam: @").execute()
+        )
+
+        messages_number: int = int(
+            inquirer.number(
+                message="How many messages would you like to spam with each account you selected? ",
+                min_allowed=1,
+                max_allowed=100,
+            ).execute()
+        )
+
+        color_print(formatted_text=[("red", "STARTED SPAMMING...")])
+
+        asyncio.run(
+            helpers.send_message_to(
+                list(
+                    accounts[selected_account] for selected_account in selected_accounts
+                ),
+                selected_spam_messages,
+                messages_number,
+                spam_to_username,
+            )
+        )
+
+        return {"error": None, "isSuccess": True}
     except Exception as e:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}

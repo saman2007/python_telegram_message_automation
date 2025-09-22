@@ -1,4 +1,4 @@
-from typing import TypedDict, Any
+from typing import TypedDict
 
 
 class ErrorResponse(TypedDict):
@@ -9,3 +9,9 @@ class ErrorResponse(TypedDict):
 class Response(TypedDict):
     error: None | ErrorResponse
     isSuccess: bool
+
+
+class Account(TypedDict):
+    api_id: int
+    api_hash: str
+    phone_number: str
