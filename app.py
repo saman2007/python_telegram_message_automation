@@ -17,7 +17,8 @@ def main():
         "Add a Telegram User": actions.add_tg_user_action,
         "Show Telegram Users": actions.show_tg_users_action,
         "Delete a Telegram User": actions.delete_tg_user_action,
-        "Add Spam Messages": lambda: NOT_IMPLEMENTED_OPTION_ERROR,
+        "Add Spam Messages": actions.add_spam_messages_action,
+        "Show Spam Messages": actions.show_spam_messages_action,
         "Start Spamming": lambda: NOT_IMPLEMENTED_OPTION_ERROR,
         "Exit": lambda: None,
     }

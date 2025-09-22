@@ -1,6 +1,6 @@
 from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
-from modules.static.constants import STORED_TG_USERS
+from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
 import json
 import re
 
@@ -35,6 +35,12 @@ def create_not_existed_data():
     try:
         with open(STORED_TG_USERS, "x") as f:
             f.write("{}")
+    except Exception as e:
+        pass
+
+    try:
+        with open(STORED_TG_SPAM_MESSAGES, "x") as f:
+            f.write("[]")
     except Exception as e:
         pass
 
