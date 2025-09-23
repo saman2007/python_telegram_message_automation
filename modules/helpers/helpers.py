@@ -1,4 +1,4 @@
-from telethon import TelegramClient, types as telethonTypes, errors
+from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
 from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
 import json
@@ -6,7 +6,7 @@ import re
 import typing
 import modules.types.types as types
 import asyncio
-from random import choice
+from random import choice, randint
 
 
 def get_session_path(phone_number: str) -> str:
@@ -73,13 +73,23 @@ async def log_out_user(api_id: int, api_hash: str, phone_number: str) -> bool:
 
 
 async def send_message_to(
-    accounts: typing.List[types.Account],
+    accounts: typing.Dict[str, types.Account],
     messages: typing.List[str],
     messages_number: int,
-    username: str,
+    spam_to: str,
 ) -> None:
-    queue = []
-    for account in accounts:
+    sent_messages: int = 0
+
+    def print_sent_messages(username: str) -> None:
+        print(
+            f"\033[94mSent {sent_messages} out of {messages_number} by {username}.\033[0m",
+            end="\n",
+        )
+
+    for username in accounts:
+        account = accounts[username]
+        sent_messages = 0
+
         tg_client = TelegramClient(
             get_session_path(account["phone_number"]),
             account["api_id"],
@@ -88,8 +98,28 @@ async def send_message_to(
 
         await tg_client.connect()
 
-        for _ in range(0, messages_number):
+        for i in range(0, messages_number):
             random_msg = choice(messages)
-            queue.append(tg_client.send_message(username, random_msg))
 
-    await asyncio.gather(*queue)
+            if i == 0:
+                print_sent_messages(username)
+                print("\033[F\033[K", end="")
+
+            await tg_client.send_message(spam_to, random_msg)
+
+            sent_messages += 1
+            print_sent_messages(username)
+
+            wait_time = randint(1, 5)
+            print(f"\033[94mWaiting for {wait_time} s.\033[0m", end="\n")
+
+            if i != messages_number - 1:
+                await asyncio.sleep(wait_time)
+
+            if i != messages_number - 1:
+                print("\033[F\033[K", end="")
+                print("\033[F\033[K", end="")
+            else:
+                print("\033[F\033[K", end="")
+
+        print("")

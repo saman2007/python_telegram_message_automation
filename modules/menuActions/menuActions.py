@@ -195,7 +195,7 @@ def start_spamming_action() -> types.Response:
             spam_messages,
             validate=lambda result: len(result) >= 1,
             invalid_message="Must be at least 1 selection",
-            instruction="(Select at least 1 and select by pressing on 'Space')",
+            instruction="(Select at least 1 and select by pressing on 'Space'. The selected messages will be sent to the specified user randomly)",
         ).execute()
 
         spam_to_username: str = (
@@ -213,13 +213,21 @@ def start_spamming_action() -> types.Response:
             ).execute()
         )
 
-        color_print(formatted_text=[("red", "STARTED SPAMMING...")])
+        color_print(
+            formatted_text=[
+                (
+                    "red",
+                    f"Note that each message will be sent from 1 to 5 seconds randomly to decrease the risk of ban. \nSTARTED SPAMMING TO {spam_to_username}...",
+                )
+            ]
+        )
 
         asyncio.run(
             helpers.send_message_to(
-                list(
-                    accounts[selected_account] for selected_account in selected_accounts
-                ),
+                {
+                    selected_account: accounts[selected_account]
+                    for selected_account in selected_accounts
+                },
                 selected_spam_messages,
                 messages_number,
                 spam_to_username,
