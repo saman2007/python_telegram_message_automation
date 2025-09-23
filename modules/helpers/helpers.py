@@ -1,4 +1,4 @@
-from telethon import TelegramClient, types as telethonTypes
+from telethon import TelegramClient, types as telethonTypes, errors
 from InquirerPy import inquirer
 from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
 import json
@@ -80,7 +80,6 @@ async def send_message_to(
 ) -> None:
     queue = []
     for account in accounts:
-
         tg_client = TelegramClient(
             get_session_path(account["phone_number"]),
             account["api_id"],

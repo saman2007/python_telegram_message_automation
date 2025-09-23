@@ -1,4 +1,5 @@
 from InquirerPy import inquirer
+from InquirerPy.validator import EmptyInputValidator
 import modules.helpers.helpers as helpers
 import json
 import asyncio
@@ -206,6 +207,9 @@ def start_spamming_action() -> types.Response:
                 message="How many messages would you like to spam with each account you selected? ",
                 min_allowed=1,
                 max_allowed=100,
+                float_allowed=False,
+                default=None,
+                validate=EmptyInputValidator(),
             ).execute()
         )
 
