@@ -5,6 +5,8 @@ import json
 import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
+from InquirerPy.separator import Separator
+from InquirerPy.base import Choice
 from modules.static.constants import (
     STORED_TG_USERS,
     STORED_TG_SPAM_MESSAGES,
@@ -153,7 +155,7 @@ def show_spam_messages_action() -> types.Response:
         with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
             spam_messages = json.loads(f.read())
 
-            color_print(formatted_text=[('purple', "Added Messages:\n")])
+            color_print(formatted_text=[("purple", "Added Messages:\n")])
 
             for spam_message in spam_messages:
                 color_print(
@@ -203,16 +205,26 @@ def start_spamming_action() -> types.Response:
         ).execute()
 
         with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
-            spam_messages = json.loads(f.read())
+            text_messages_options = json.loads(f.read())
+            text_messages_options = [
+                Choice({"type": "text", "data": spam_message}, spam_message)
+                for spam_message in text_messages_options
+            ]
 
-        if len(spam_messages) == 0:
+        media_options = os.listdir(MEDIA_FOLDER)
+        media_options = [
+            Choice({"type": "media", "data": MEDIA_FOLDER + media_name}, media_name)
+            for media_name in media_options
+        ]
+
+        if len(text_messages_options) == 0 and len(media_options) == 0:
             raise Exception(
                 "You must add least add one spam message to the list of spam messages which is possible by selecting 'Add a Spam Message' option."
             )
 
-        selected_spam_messages: typing.List[str] = inquirer.checkbox(
-            "Select the accounts that you want to spam with:",
-            spam_messages,
+        selected_spam_options: typing.List[types.MessageDict] = inquirer.checkbox(
+            "Select the messages and media that you want to spam:",
+            [*text_messages_options, Separator(), *media_options],
             validate=lambda result: len(result) >= 1,
             invalid_message="Must be at least 1 selection",
             instruction="(Select at least 1 and select by pressing on 'Space'. The selected messages will be sent to the specified user randomly)",
@@ -248,7 +260,7 @@ def start_spamming_action() -> types.Response:
                     selected_account: accounts[selected_account]
                     for selected_account in selected_accounts
                 },
-                selected_spam_messages,
+                selected_spam_options,
                 messages_number,
                 spam_to_username,
             )

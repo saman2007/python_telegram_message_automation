@@ -12,7 +12,6 @@ import modules.types.types as types
 import asyncio
 from random import choice, randint
 import os
-from InquirerPy.utils import color_print
 
 
 def get_session_path(phone_number: str) -> str:
@@ -85,7 +84,7 @@ async def log_out_user(api_id: int, api_hash: str, phone_number: str) -> bool:
 
 async def send_message_to(
     accounts: typing.Dict[str, types.Account],
-    messages: typing.List[str],
+    messages: typing.List[types.MessageDict],
     messages_number: int,
     spam_to: str,
 ) -> None:
@@ -116,7 +115,10 @@ async def send_message_to(
                 print_sent_messages(username)
                 print("\033[F\033[K", end="")
 
-            await tg_client.send_message(spam_to, random_msg)
+            if random_msg["type"] == "text":
+                await tg_client.send_message(spam_to, random_msg["data"])
+            elif random_msg["type"] == "media":
+                await tg_client.send_file(spam_to, random_msg["data"])
 
             sent_messages += 1
             print_sent_messages(username)
