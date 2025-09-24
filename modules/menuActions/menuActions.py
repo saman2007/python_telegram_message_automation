@@ -5,8 +5,13 @@ import json
 import asyncio
 import modules.types.types as types
 from InquirerPy.utils import color_print
-from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
+from modules.static.constants import (
+    STORED_TG_USERS,
+    STORED_TG_SPAM_MESSAGES,
+    MEDIA_FOLDER,
+)
 import typing
+import os
 
 
 def add_tg_user_action() -> types.Response:
@@ -148,8 +153,7 @@ def show_spam_messages_action() -> types.Response:
         with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
             spam_messages = json.loads(f.read())
 
-            if len(spam_messages) > 0:
-                color_print(formatted_text=[("purple", f"___________")])
+            color_print(formatted_text=[('purple', "Added Messages:\n")])
 
             for spam_message in spam_messages:
                 color_print(
@@ -159,9 +163,25 @@ def show_spam_messages_action() -> types.Response:
                     ]
                 )
 
-            return {"error": None, "isSuccess": True}
     except Exception as e:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+    try:
+        media_files = os.listdir(MEDIA_FOLDER)
+
+        color_print(formatted_text=[("purple", f"Added Medias:\n")])
+
+        for media in media_files:
+            color_print(
+                formatted_text=[
+                    ("orange", media + "\n"),
+                    ("purple", "___________"),
+                ]
+            )
+    except Exception as e:
+        return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+    return {"error": None, "isSuccess": True}
 
 
 def start_spamming_action() -> types.Response:
