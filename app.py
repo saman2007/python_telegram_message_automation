@@ -2,7 +2,8 @@ from InquirerPy import inquirer
 import modules.menuActions.menuActions as actions
 import modules.types.types as types
 from InquirerPy.utils import color_print
-from modules.helpers.helpers import create_not_existed_data
+from modules.helpers.helpers import initialize
+from modules.static.constants import GITHUB_ADDRESS
 
 NOT_IMPLEMENTED_OPTION_ERROR: types.Response = {
     "error": {"message": "Option is not implemented yet, coming soon!", "code": 503},
@@ -11,7 +12,25 @@ NOT_IMPLEMENTED_OPTION_ERROR: types.Response = {
 
 
 def main():
-    create_not_existed_data()
+    try:
+        initialize()
+    except Exception as e:
+        color_print(
+            formatted_text=[
+                (
+                    "red",
+                    "An error occurred during the initialization of the app.\nThe exact error message is:\n",
+                ),
+                ("white", str(e)),
+                ("white", "\n"),
+                (
+                    "red",
+                    f"If you think there is anything wrong with the code, feel free to open an issue on the project’s GitHub.\n Github: {GITHUB_ADDRESS} \nExited.",
+                ),
+            ]
+        )
+
+        return
 
     options = {
         "Add a Telegram User": actions.add_tg_user_action,
@@ -37,7 +56,14 @@ def main():
 
         if not response["isSuccess"]:
             color_print(
-                formatted_text=[("red", "Error: " + response["error"]["message"])]
+                formatted_text=[
+                    ("red", "Error: " + response["error"]["message"]),
+                    ("white", "\n"),
+                    (
+                        "red",
+                        "If you think there is anything wrong with the code, feel free to open an issue on the project’s GitHub which you can find in Github option in the menu.",
+                    ),
+                ]
             )
         else:
             color_print(formatted_text=[("green", "Done!")])

@@ -1,12 +1,18 @@
 from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
-from modules.static.constants import STORED_TG_USERS, STORED_TG_SPAM_MESSAGES
+from modules.static.constants import (
+    STORED_TG_USERS,
+    STORED_TG_SPAM_MESSAGES,
+    MEDIA_FOLDER,
+)
 import json
 import re
 import typing
 import modules.types.types as types
 import asyncio
 from random import choice, randint
+import os
+from InquirerPy.utils import color_print
 
 
 def get_session_path(phone_number: str) -> str:
@@ -35,17 +41,22 @@ async def get_tg_user_info(
     return await tg_client.get_me()
 
 
-def create_not_existed_data():
+def initialize():
+    try:
+        os.makedirs(MEDIA_FOLDER)
+    except FileExistsError as e:
+        pass
+
     try:
         with open(STORED_TG_USERS, "x") as f:
             f.write("{}")
-    except Exception as e:
+    except FileExistsError as e:
         pass
 
     try:
         with open(STORED_TG_SPAM_MESSAGES, "x") as f:
             f.write("[]")
-    except Exception as e:
+    except FileExistsError as e:
         pass
 
 
