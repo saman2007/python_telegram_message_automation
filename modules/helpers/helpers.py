@@ -110,16 +110,9 @@ async def send_message_to(
             sent_messages += 1
             print_sent_messages(username)
 
-            wait_time = randint(1, 5)
-            print(f"\033[94mWaiting for {wait_time} s.\033[0m", end="\n")
-
             if i != messages_number - 1:
+                wait_time = randint(1, 5)
+                print(f"\033[94mWaiting for {wait_time} s.\033[0m", end="\n")
                 await asyncio.sleep(wait_time)
-
-            if i != messages_number - 1:
                 print("\033[F\033[K", end="")
                 print("\033[F\033[K", end="")
-            else:
-                print("\033[F\033[K", end="")
-
-        print("")
