@@ -21,23 +21,31 @@ def get_session_path(phone_number: str) -> str:
 async def get_tg_user_info(
     api_id: int, api_hash: str, phone_number: str
 ) -> telethonTypes.User | telethonTypes.InputPeerUser:
-    async def code_callback():
-        return await inquirer.text(
-            "Enter the code that is sent to your telegram PV: "
-        ).execute_async()
+    try:
 
-    tg_client = TelegramClient(
-        get_session_path(phone_number),
-        api_id,
-        api_hash,
-    )
+        async def code_callback():
+            return await inquirer.text(
+                "Enter the code that is sent to your telegram PV: "
+            ).execute_async()
 
-    await tg_client.start(
-        phone=phone_number,
-        code_callback=code_callback,
-    )
+        tg_client = TelegramClient(
+            get_session_path(phone_number),
+            api_id,
+            api_hash,
+        )
 
-    return await tg_client.get_me()
+        await tg_client.start(
+            phone=phone_number,
+            code_callback=code_callback,
+        )
+
+        user_info = await tg_client.get_me()
+    except Exception as e:
+        raise e
+    finally:
+        await tg_client.disconnect()
+
+    return user_info
 
 
 def initialize():
@@ -129,3 +137,5 @@ async def send_message_to(
                 await asyncio.sleep(wait_time)
                 print("\033[F\033[K", end="")
                 print("\033[F\033[K", end="")
+
+        await tg_client.disconnect()

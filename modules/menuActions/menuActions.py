@@ -44,13 +44,8 @@ def add_tg_user_action() -> types.Response:
             accounts: typing.Dict[str, types.Account] = json.loads(f.read())
 
             if f"@{user_info.username}" in accounts:
+                asyncio.run(helpers.log_out_user(api_id, api_hash, phone_number))
                 raise Exception("This account already exists.")
-
-            accounts[f"@{user_info.username}"] = {
-                "api_id": int(api_id),
-                "api_hash": api_hash,
-                "phone_number": phone_number,
-            }
 
             proceed = inquirer.confirm(
                 message=f"Accounts username is @{user_info.username}. Is it OK to continue?",
@@ -58,7 +53,14 @@ def add_tg_user_action() -> types.Response:
             ).execute()
 
             if not proceed:
+                asyncio.run(helpers.log_out_user(api_id, api_hash, phone_number))
                 raise Exception("Operation aborted.")
+
+            accounts[f"@{user_info.username}"] = {
+                "api_id": int(api_id),
+                "api_hash": api_hash,
+                "phone_number": phone_number,
+            }
 
             f.seek(0)
             f.write(json.dumps(accounts))
