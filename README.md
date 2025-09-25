@@ -8,7 +8,7 @@
 > The author is not responsible for misuse of this code.
 
 ## About
-This repository provides a terminal UI to send automatic text messages and medias randomly, to a specified person in telegram. The goal of writing this project are:
+This repository provides a terminal UI to send automatic text messages and media randomly, to a specified person in telegram. The goals of writing this project are:
 - Work with the Telegram API.
 - Send messages programmatically.
 - Understand the basics of automation in Python.
@@ -37,21 +37,21 @@ Here, I explain all options of the menu and some details in the app.
 `pip install -r requirements.txt`  
 6. Now you're ready! When your `venv` is activated, enter `python app.py` to run `app.py` which has the main functionality of the project.  
 7. After you're done, you can deactivate your `venv` by entering this in the terminal:
-`decativate`
+`deactivate`
 
 ### Initialization process
 When you start the app, an initialization method will be executed.  
-This initialization method creates you a `data` folder(if it is not already existed) that includes these files and folders: 
+This initialization method creates you a `data` folder(if it doesn't exist) that includes these files and folders: 
 - `messages.json` for storing your added messages
 - `data.json` to store your added accounts
-- `media` folder for storing medias you want to send.
+- `media` folder for storing media you want to send.
 
 ### Telegram Account Sessions
-There is a folder called `sessions` that will be automatically created in case that it is not existed. After adding an account, the accounts session will be stored in this folder and after deleting an account, the created session will be deleted from this folder.
+There is a folder called `sessions` that will be automatically created in case that it doesn't exist. After adding an account, the account's session will be stored in this folder and after deleting an account, the created session will be deleted from this folder.
 
 ### Add a Telegram User(menu option)
 To start using the app, you must get a telegram api and get its `API ID` and `API Hash` which you can get here: https://my.telegram.org/apps  
-After you created a telegram api, select `Add a Telegram User` option from the menu. You will be asked to enter `API ID`, `API Hash` and `Phone Number`. After that, if your entered info are correct, a code will be sent to your telegram PV by telegram itself. after you entered that code and confirming the adding account, the account will be added to the app and a session will be created for your account.
+After you created a telegram api, select `Add a Telegram User` option from the menu. You will be asked to enter `API ID`, `API Hash` and `Phone Number`. After that, if the info you entered is correct, a code will be sent to your telegram PV by telegram itself. After you enter that code and confirming the adding account, the account will be added to the app and a session will be created for your account.
 
 ### Show Telegram Users(menu option)
 This option simply shows the `username`, `API ID`, `API Hash` and `Phone Number` of added users.
@@ -62,14 +62,14 @@ With this option, you can delete an added telegram user from the app. After dele
 ### Add a Message(menu option)
 With this option, you can add a message and it will be stored in the `messages.json` file in `data` folder and you can choose the added message later to be sent.
 
-NOTE: This option is only for adding text messages. If you want to add medias, you have to go to `data` folder, then go to `media` folder and place the medias you want to add.
+NOTE: This option is only for adding text messages. If you want to add media, you have to go to `data` folder, then go to `media` folder and place the media you want to add.
 
 ### Show Messages(menu option)
-You can see the added text messages and medias with this option.
+You can see the added text messages and media with this option.
 
 ### Start Messaging(menu option)
 This is the main option of this bot. By selecting this, you will be asked to choose the accounts that you want to message with, you can choose one or more account.  
-Then, you will be asked to choose the text messages and medias to send. Note that the selected text and media messages will be sent randomly.  
-After that, you have to enter the telegram usename of the user that you want to send message.  
-Then, you will be asked the number of messages that you want to send. Please note that the selected number is the number of messages that will be send with each account.  
-After that, sending messages will be started. To emphasis that this is not a spamming process, after that a message is sent, there will be a pause between 1 to 5 seconds.
+Then, you will be asked to choose the text messages and media to send. Note that the selected text and media messages will be sent randomly.  
+After that, you have to enter the telegram username of the user that you want to send message.  
+Then, you will be asked the number of messages that you want to send. Please note that the selected number is the number of messages that will be sent with each account.  
+After that, sending messages will be started. To emphasize that this is not a spamming process, after that a message is sent, there will be a pause between 1 to 5 seconds.
