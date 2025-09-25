@@ -67,6 +67,9 @@ NOTE: This option is only for adding text messages. If you want to add media, yo
 ### Show Messages(menu option)
 You can see the added text messages and media with this option.
 
+### Delete a Message(menu option)
+You can delete only added text messages, with this option. For deleting medias, like adding them, simply go to `data/media` path from root of the project and delete the media you want.
+
 ### Start Messaging(menu option)
 This is the main option of this bot. By selecting this, you will be asked to choose the accounts that you want to message with, you can choose one or more account.  
 Then, you will be asked to choose the text messages and media to send. Note that the selected text and media messages will be sent randomly.  
