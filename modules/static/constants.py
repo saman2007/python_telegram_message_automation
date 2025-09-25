@@ -1,6 +1,6 @@
 STORED_TG_USERS = "data/data.json"
 STORED_SESSIONS_FOLDER = "sessions"
-STORED_TG_SPAM_MESSAGES = "data/spam_messages.json"
+STORED_TG_MESSAGES = "data/messages.json"
 DATA_FOLDER = "data/"
 MEDIA_FOLDER = "data/media/"
-GITHUB_ADDRESS = "https://github.com/saman2007/python_telegram_spammer"
+GITHUB_ADDRESS = "https://github.com/saman2007/python_telegram_message_automation"

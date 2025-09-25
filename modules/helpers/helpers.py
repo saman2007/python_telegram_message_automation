@@ -2,7 +2,7 @@ from telethon import TelegramClient, types as telethonTypes
 from InquirerPy import inquirer
 from modules.static.constants import (
     STORED_TG_USERS,
-    STORED_TG_SPAM_MESSAGES,
+    STORED_TG_MESSAGES,
     MEDIA_FOLDER,
 )
 import json
@@ -53,7 +53,7 @@ def initialize():
         pass
 
     try:
-        with open(STORED_TG_SPAM_MESSAGES, "x") as f:
+        with open(STORED_TG_MESSAGES, "x") as f:
             f.write("[]")
     except FileExistsError as e:
         pass
@@ -86,7 +86,7 @@ async def send_message_to(
     accounts: typing.Dict[str, types.Account],
     messages: typing.List[types.MessageDict],
     messages_number: int,
-    spam_to: str,
+    recipient_username: str,
 ) -> None:
     sent_messages: int = 0
 
@@ -116,9 +116,9 @@ async def send_message_to(
                 print("\033[F\033[K", end="")
 
             if random_msg["type"] == "text":
-                await tg_client.send_message(spam_to, random_msg["data"])
+                await tg_client.send_message(recipient_username, random_msg["data"])
             elif random_msg["type"] == "media":
-                await tg_client.send_file(spam_to, random_msg["data"])
+                await tg_client.send_file(recipient_username, random_msg["data"])
 
             sent_messages += 1
             print_sent_messages(username)

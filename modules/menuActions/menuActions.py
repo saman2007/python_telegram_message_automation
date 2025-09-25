@@ -9,7 +9,7 @@ from InquirerPy.separator import Separator
 from InquirerPy.base import Choice
 from modules.static.constants import (
     STORED_TG_USERS,
-    STORED_TG_SPAM_MESSAGES,
+    STORED_TG_MESSAGES,
     MEDIA_FOLDER,
     GITHUB_ADDRESS,
 )
@@ -135,15 +135,17 @@ def delete_tg_user_action() -> types.Response:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
 
 
-def add_spam_messages_action() -> types.Response:
-    spam_message = inquirer.text("Enter your spam message: ").execute()
+def add_messages_action() -> types.Response:
+    message = inquirer.text("Enter your message: ").execute()
+
     try:
-        with open(STORED_TG_SPAM_MESSAGES, "r+", encoding="utf-8") as f:
-            spam_messages = json.loads(f.read())
-            print(spam_message)
-            spam_messages.append(spam_message)
+        with open(STORED_TG_MESSAGES, "r+", encoding="utf-8") as f:
+            messages: typing.List[str] = json.loads(f.read())
+
+            messages.append(message)
+
             f.seek(0)
-            f.write(json.dumps(spam_messages))
+            f.write(json.dumps(messages))
             f.truncate()
 
             return {"error": None, "isSuccess": True}
@@ -151,17 +153,17 @@ def add_spam_messages_action() -> types.Response:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
 
 
-def show_spam_messages_action() -> types.Response:
+def show_messages_action() -> types.Response:
     try:
-        with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
-            spam_messages = json.loads(f.read())
+        with open(STORED_TG_MESSAGES, "r", encoding="utf-8") as f:
+            messages: typing.List[str] = json.loads(f.read())
 
             color_print(formatted_text=[("purple", "Added Messages:\n")])
 
-            for spam_message in spam_messages:
+            for message in messages:
                 color_print(
                     formatted_text=[
-                        ("orange", spam_message + "\n"),
+                        ("orange", message + "\n"),
                         ("purple", "___________"),
                     ]
                 )
@@ -187,7 +189,7 @@ def show_spam_messages_action() -> types.Response:
     return {"error": None, "isSuccess": True}
 
 
-def start_spamming_action() -> types.Response:
+def start_auto_messaging_action() -> types.Response:
     try:
         with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
             accounts: typing.Dict[str, types.Account] = json.loads(f.read())
@@ -198,18 +200,18 @@ def start_spamming_action() -> types.Response:
             )
 
         selected_accounts = inquirer.checkbox(
-            "Select the accounts that you want to spam with:",
+            "Select the accounts that you want to auto send with:",
             accounts.keys(),
             validate=lambda result: len(result) >= 1,
             invalid_message="Must be at least 1 selection",
             instruction="(Select at least 1 and select by pressing on 'Space')",
         ).execute()
 
-        with open(STORED_TG_SPAM_MESSAGES, "r", encoding="utf-8") as f:
+        with open(STORED_TG_MESSAGES, "r", encoding="utf-8") as f:
             text_messages_options = json.loads(f.read())
             text_messages_options = [
-                Choice({"type": "text", "data": spam_message}, spam_message)
-                for spam_message in text_messages_options
+                Choice({"type": "text", "data": text_message}, text_message)
+                for text_message in text_messages_options
             ]
 
         media_options = os.listdir(MEDIA_FOLDER)
@@ -220,24 +222,29 @@ def start_spamming_action() -> types.Response:
 
         if len(text_messages_options) == 0 and len(media_options) == 0:
             raise Exception(
-                "You must add least add one spam message to the list of spam messages which is possible by selecting 'Add a Spam Message' option."
+                "You must add least add one message to the list of messages which is possible by selecting 'Add a Message' option."
             )
 
-        selected_spam_options: typing.List[types.MessageDict] = inquirer.checkbox(
-            "Select the messages and media that you want to spam:",
-            [*text_messages_options, Separator(), *media_options],
-            validate=lambda result: len(result) >= 1,
-            invalid_message="Must be at least 1 selection",
-            instruction="(Select at least 1 and select by pressing on 'Space'. The selected messages will be sent to the specified user randomly)",
-        ).execute()
+        selected_message_media_choices: typing.List[types.MessageDict] = (
+            inquirer.checkbox(
+                "Select the messages and media that you want to auto send:",
+                [*text_messages_options, Separator(), *media_options],
+                validate=lambda result: len(result) >= 1,
+                invalid_message="Must be at least 1 selection",
+                instruction="(Select at least 1 and select by pressing on 'Space'. The selected messages will be sent to the specified user randomly)",
+            ).execute()
+        )
 
-        spam_to_username: str = (
-            "@" + inquirer.text("Enter the username that you want to spam: @").execute()
+        recipient_username: str = (
+            "@"
+            + inquirer.text(
+                "Enter the username that you want to auto send messages to: @"
+            ).execute()
         )
 
         messages_number: int = int(
             inquirer.number(
-                message="How many messages would you like to spam with each account you selected? ",
+                message="How many messages would you like to auto send with each account you selected? ",
                 min_allowed=1,
                 max_allowed=100,
                 float_allowed=False,
@@ -250,7 +257,7 @@ def start_spamming_action() -> types.Response:
             formatted_text=[
                 (
                     "red",
-                    f"Note that each message will be sent from 1 to 5 seconds randomly to decrease the risk of ban. \nSTARTED SPAMMING TO {spam_to_username}...",
+                    f"Note that each message will be sent from 1 to 5 seconds randomly to decrease the risk of ban. \nSTARTED AUTO SENDING MESSAGES TO {recipient_username}...",
                 )
             ]
         )
@@ -261,9 +268,9 @@ def start_spamming_action() -> types.Response:
                     selected_account: accounts[selected_account]
                     for selected_account in selected_accounts
                 },
-                selected_spam_options,
+                selected_message_media_choices,
                 messages_number,
-                spam_to_username,
+                recipient_username,
             )
         )
 
