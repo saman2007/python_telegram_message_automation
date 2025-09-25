@@ -39,6 +39,7 @@ def main():
         "Add a Spam Message": actions.add_spam_messages_action,
         "Show Spam Messages": actions.show_spam_messages_action,
         "Start Spamming": actions.start_spamming_action,
+        "Github": actions.show_github_action,
         "Exit": lambda: None,
     }
 

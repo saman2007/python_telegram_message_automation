@@ -11,6 +11,7 @@ from modules.static.constants import (
     STORED_TG_USERS,
     STORED_TG_SPAM_MESSAGES,
     MEDIA_FOLDER,
+    GITHUB_ADDRESS,
 )
 import typing
 import os
@@ -269,3 +270,9 @@ def start_spamming_action() -> types.Response:
         return {"error": None, "isSuccess": True}
     except Exception as e:
         return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+
+def show_github_action() -> types.Response:
+    color_print(formatted_text=[("green", GITHUB_ADDRESS)])
+
+    return {"error": None, "isSuccess": True}
