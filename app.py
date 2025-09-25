@@ -38,6 +38,7 @@ def main():
         "Delete a Telegram User": actions.delete_tg_user_action,
         "Add a Message": actions.add_messages_action,
         "Show Messages": actions.show_messages_action,
+        "Delete a Message": actions.delete_messages_action,
         "Start Auto Messaging": actions.start_auto_messaging_action,
         "Github": actions.show_github_action,
         "Exit": lambda: None,

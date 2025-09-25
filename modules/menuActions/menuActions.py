@@ -189,6 +189,30 @@ def show_messages_action() -> types.Response:
     return {"error": None, "isSuccess": True}
 
 
+def delete_messages_action() -> types.Response:
+    try:
+        with open(STORED_TG_MESSAGES, "r", encoding="utf-8") as f:
+            messages: typing.List[str] = json.loads(f.read())
+
+        if not messages:
+            raise Exception("No text messages to delete.")
+
+        selected_message = inquirer.select(
+            message="Select the text message you want to delete:",
+            choices=messages,
+        ).execute()
+
+        messages.remove(selected_message)
+
+        with open(STORED_TG_MESSAGES, "w", encoding="utf-8") as f:
+            f.write(json.dumps(messages))
+            f.truncate()
+
+        return {"error": None, "isSuccess": True}
+    except Exception as e:
+        return {"error": {"code": 500, "message": str(e)}, "isSuccess": False}
+
+
 def start_auto_messaging_action() -> types.Response:
     try:
         with open(STORED_TG_USERS, "r", encoding="utf-8") as f:
