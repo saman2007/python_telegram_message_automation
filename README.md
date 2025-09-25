@@ -1,4 +1,4 @@
-# Python Telegram Automation
+# Python Telegram Message Automation
 
 ## Note🚨🚨
 
